@@ -49,3 +49,38 @@ docker-compose --version
 ```
 
 If your versions are different, it should not be a big problem. Though, some of the following might raise warnings or errors that you should debug on your own.
+
+## :factory: Infrastructure
+
+To have everything up and running, you will need to have the whole producer part running ([the repo from the previous article](https://github.com/theodorecurtil/flink_sql_job)) and Druid and Superset. To do this, do the following:
+
+```bash
+## Clone the repo
+git clone https://github.com/theodorecurtil/flink_sql_job.git
+
+## cd into the repo
+cd flink_sql_job
+
+## docker-compose the infra
+docker-compose up -d
+
+## go back to previous level
+cd ..
+
+## Clone the new repo
+git clone git@github.com:theodorecurtil/real_time_dashboarding.git
+
+## cd into the repo
+cd real_time_dashboarding
+
+## start the infrastructure
+./start.sh
+```
+
+> :warning: You might have to make the `start.sh` script executable before being allowed to execute it. If this happens, simply type the following command
+
+```bash
+chmod +x start.sh
+```
+
+The Druid [docker-compose](https://github.com/theodorecurtil/real_time_dashboarding/blob/main/druid_setup/docker-compose.yaml) file assumes that the Kafka cluster is running on the Docker network `flink_sql_job_default`. It should be the case if you cloned the `flink_sql_job` repo and started the infra using the commands listed before.
