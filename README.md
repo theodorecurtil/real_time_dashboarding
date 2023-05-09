@@ -97,3 +97,85 @@ To check that all the services are up and running (you will see that a lot of Do
 You should see something like
 
 ![](./pictures/all_uis.png)
+
+## Druid Stream Ingestion
+
+The Kafka producer we started produces messages in the `SALES` topic. These are fake sales events produced every second with the following schema
+
+```json
+{
+    "type": "record",
+    "name": "StoreSale",
+    "namespace": "com.acosom",
+    "fields": [
+        {
+            "name": "store_id",
+            "type": {
+                "type": "string",
+                "avro.java.string": "String"
+            },
+            "doc": "ID of the store where the sale was made."
+        },
+        {
+            "name": "sale_amount",
+            "type": "int",
+            "doc": "Amount of the sale in local currency. This value is an integer."
+        },
+        {
+            "name": "sale_ts",
+            "type": "long",
+            "doc": "Epoch timestamp when the sale happened."
+        }
+    ]
+}
+```
+
+First thing we will do is connect Druid to our Kafka cluster to allow the streaming ingestion of this topic and store it in our real-time database.
+
+We will do this using Druid's UI at [http://localhost:8888](http://localhost:8888). Below we show how to create the streaming ingestion spec step by step, but note that the ingestion spec can simply be posted using Druid's rest API as a json.
+
+The first step is to click the `load data` button and select the `Streaming` option.
+
+![](./pictures/streaming_spec_1.png)
+
+Then select `Start a new streaming spec` to start writing our custom streaming spec.
+
+![](./pictures/streaming_spec_2.png)
+
+Once this is done, select `Apache Kafka` as the source.
+
+![](./pictures/streaming_spec_3.png)
+
+Once this is done, write the address of the Kafka broker and the topic name and click to apply the configuration. You should then see on the left sample data points from our `SALES` topic. Note that the data is not deserialized as this is the raw data coming from Kafka. We will need to include the Avro deserializer. To do this, click the `Edit spec` button.
+
+![](./pictures/streaming_spec_4.png)
+
+In the spec config, add the following:
+
+```json
+"inputFormat": {
+"type": "avro_stream",
+"binaryAsString": false,
+"avroBytesDecoder": {
+    "type": "schema_registry",
+    "url": "http://schema-registry:8081"
+    }
+}
+```
+
+and then click the `Parse data` button to go back to editing the spec.
+
+![](./pictures/streaming_spec_5.png)
+
+Now you should see our data being properly deserialized! Click the `Parse time` button to continue.
+
+![](./pictures/streaming_spec_6.png)
+
+From now on, there is not much more to edit, simply click through the panels until the streaming spec is submitted. Druid's UI will then automatically redirect to the `Ingestion` tab where you should see the following, indicating that Druid is successfully consuming from Kafka.
+
+![](./pictures/streaming_spec_7.png)
+
+Finally, to check that data is properly loaded in Druid, click the `Query` tab and try a mock query. See example below.
+
+![](./pictures/streaming_spec_8.png)
+
