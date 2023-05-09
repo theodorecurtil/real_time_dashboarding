@@ -199,3 +199,50 @@ Basically, the following should apply:
 2. `172.18.0.1` for Linux users
 
 ![](./pictures/connect_db_superset.png)
+
+### Create Dashboard
+
+In Superset, a `Dashboard` in made of `Charts`; so the first thing is to create a `Chart`. To create a `Chart` we need to create a `Dataset` object. Click the `Dataset` button and follow the steps below to create a `Dataset` from the `SALES` topic.
+
+![](./pictures/create_dataset.png)
+
+Create a time-series area chart from the `SALES` dataset and add a couple of configurations to the chart, as shown below. Then save the `Chart` and add it to a new `Dashboard`!
+
+![](./pictures/create_chart.png)
+
+![](./pictures/dashboard_1.png)
+
+## :chipmunk: Throw in some Apache Flink
+
+You will note that the Superset `Chart` that we created does the 1-Minute aggregation that our Flink job also does. Let us directly consume the aggregated data from Apache Flink.
+
+The steps to follow:
+
+1. Start the Flink job
+2. Write the streaming ingestion spec into Druid from the new topic
+3. Create new chart in Superset and add it to the dashboard
+
+### Start the Flink job
+
+To start the aggregating Flink job, that computes aggregated sales per store per bucket of 1 minute, type the following commands:
+
+```bash
+## Docker exec in the container
+docker exec -it sql-client bash
+
+## Start the Flink job
+sql-client.sh -f sales-aggregate.sql
+
+## Exit container
+exit
+```
+
+You will see in Kafka that a new topic `SALES_AGGREGATE` is created by the Flink job.
+
+Now repeat the operations related to Druid and Superset to ingest the data in Druid and create the `Chart` in Superset.
+
+See the dashboard below
+
+![](./pictures/dashboard_2.png)
+
+As expected, the two charts are identical, as the same aggregation is performed; but in one case the aggregation in performed in Superset, and in the other case it is performed via Apache Flink, and Superset simply reads the data from the database without having to perform any work. In addition we created a pie-chart that shows the share of each store in the total amount of sales. As expected, this is close to a uniform distribution of the sales as each store generates sales from the same uniform distribution.
