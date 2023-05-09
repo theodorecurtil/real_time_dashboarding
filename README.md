@@ -198,4 +198,4 @@ Basically, the following should apply:
 1. `host.docker.internal` for Mac or Ubuntu users
 2. `172.18.0.1` for Linux users
 
-![](./pictures/superset-druid-connection.png)
+![](./pictures/connect_db_superset.png)
