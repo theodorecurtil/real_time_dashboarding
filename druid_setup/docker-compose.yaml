@@ -1,0 +1,143 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+# Deserialize Avro streams in Druid
+# https://blog.hellmar-becker.de/2021/10/19/reading-avro-streams-from-confluent-cloud-into-druid/
+
+# Superset stuff
+# https://superset.apache.org/docs/installation/installing-superset-using-docker-compose
+# https://hevodata.com/learn/druid-superset-integration-3-easy-steps/#adas
+
+
+version: "2.2"
+
+volumes:
+  metadata_data: {}
+  middle_var: {}
+  historical_var: {}
+  broker_var: {}
+  coordinator_var: {}
+  router_var: {}
+  druid_shared: {}
+
+
+services:
+  postgres:
+    networks:
+      - flink_sql_job_default
+    container_name: postgres
+    image: postgres:latest
+    volumes:
+      - metadata_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=FoolishPassword
+      - POSTGRES_USER=druid
+      - POSTGRES_DB=druid
+
+  coordinator:
+    networks:
+      - flink_sql_job_default
+    image: apache/druid:25.0.0
+    container_name: coordinator
+    volumes:
+      - druid_shared:/opt/shared
+      - coordinator_var:/opt/druid/var
+    depends_on: 
+      - postgres
+    ports:
+      - "28081:8081"
+    command:
+      - coordinator
+    env_file:
+      - environment
+
+  broker:
+    networks:
+      - flink_sql_job_default
+    image: apache/druid:25.0.0
+    container_name: broker
+    volumes:
+      - broker_var:/opt/druid/var
+    depends_on: 
+      - postgres
+      - coordinator
+    ports:
+      - "18082:8082"
+    command:
+      - broker
+    env_file:
+      - environment
+
+  historical:
+    networks:
+        - flink_sql_job_default
+    image: apache/druid:25.0.0
+    container_name: historical
+    volumes:
+      - druid_shared:/opt/shared
+      - historical_var:/opt/druid/var
+    depends_on: 
+      - postgres
+      - coordinator
+    ports:
+      - "18083:8083"
+    command:
+      - historical
+    env_file:
+      - environment
+
+  middlemanager:
+    networks:
+      - flink_sql_job_default
+    image: apache/druid:25.0.0
+    container_name: middlemanager
+    volumes:
+      - druid_shared:/opt/shared
+      - middle_var:/opt/druid/var
+    depends_on: 
+      - postgres
+      - coordinator
+    ports:
+      - "8091:8091"
+      - "8100-8105:8100-8105"
+    command:
+      - middleManager
+    env_file:
+      - environment
+
+  router:
+    networks:
+        - flink_sql_job_default
+    image: apache/druid:25.0.0
+    container_name: router
+    volumes:
+      - router_var:/opt/druid/var
+    depends_on:
+      - postgres
+      - coordinator
+    ports:
+      - "8888:8888"
+    command:
+      - router
+    env_file:
+      - environment
+
+networks:
+  flink_sql_job_default:
+    external: true
