@@ -10,7 +10,7 @@ and we will see how to ingest our streaming data into a real-time database: [Apa
 
 The two new services we introduce in this article are a bit less known than what we have used so far, so I am just going to introduce them briefly.
 
-### Apache Druid
+### :mage_man: Apache Druid
 
 > [Druid is a high performance, real-time analytics database that delivers sub-second queries on streaming and batch data at scale and under load.](https://druid.apache.org/)
 
@@ -20,7 +20,7 @@ The two new services we introduce in this article are a bit less known than what
 - Druid includes a SQL-like query language called Druid Query Language (DSL), which allows users to write complex queries against their data.
 - Druid integrates with a number of other data processing and analysis tools, including Apache Kafka, Apache Spark, and Apache Superset.
 
-### Apache Superset
+### :infinity: Apache Superset
 
 Apache Superset is a modern, open-source business intelligence (BI) platform that allows users to visualize and explore their data in real time.
 
