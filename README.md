@@ -84,3 +84,16 @@ chmod +x start.sh
 ```
 
 The Druid [docker-compose](https://github.com/theodorecurtil/real_time_dashboarding/blob/main/druid_setup/docker-compose.yaml) file assumes that the Kafka cluster is running on the Docker network `flink_sql_job_default`. It should be the case if you cloned the `flink_sql_job` repo and started the infra using the commands listed before.
+
+### Sanity Check
+
+To check that all the services are up and running (you will see that a lot of Docker containers are running by now), visit the following urls and check that all the UIs load properly:
+
+1. Kafka: [http://localhost:9021](http://localhost:9021/clusters)
+2. Flink: [http://localhost:18081](http://localhost:18081/#/overview)
+3. Druid: username is `druid_system` and password is `password2` [http://localhost:8888](http://localhost:8888)
+4. Superset: username is `admin` and password is `admin` [http://localhost:8088](http://localhost:8088)
+
+You should see something like
+
+![](./pictures/all_uis.png)
