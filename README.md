@@ -150,7 +150,7 @@ Once this is done, write the address of the Kafka broker and the topic name and 
 
 ![](./pictures/streaming_spec_4.png)
 
-In the spec config, add the following:
+In the spec config, add the following (thank you [Hellmar](https://blog.hellmar-becker.de/2021/10/19/reading-avro-streams-from-confluent-cloud-into-druid/)):
 
 ```json
 "inputFormat": {
@@ -179,3 +179,23 @@ Finally, to check that data is properly loaded in Druid, click the `Query` tab a
 
 ![](./pictures/streaming_spec_8.png)
 
+## Data Visualization in Superset
+
+Now that the data in successfully being ingested in our streaming database, it is time to create our dashboard to report sales to management!
+
+Navigate to the Superset UI at [localhost:8088](http://localhost:8088).
+
+First thing we need to do is to connect our Druid database to Superset. To do this, click the `+` button in the upper-right corner and select `Data` and `Connect database`. Then, follow the steps shown below. Note that the connection string contains the following:
+
+1. database type: `druid`
+2. database credentials: `druid_system` and `password2`
+3. database sql endpoint: `172.18.0.1:8888/druid/v2/sql`
+
+Because Superset is not running on the same Docker network as the other services, we have to access it using the host. This will change depending on your OS. See [Superset documentation](https://superset.apache.org/docs/installation/installing-superset-using-docker-compose/#5-connecting-superset-to-your-local-database-instance).
+
+Basically, the following should apply:
+
+1. `host.docker.internal` for Mac or Ubuntu users
+2. `172.18.0.1` for Linux users
+
+![](./pictures/superset-druid-connection.png)
