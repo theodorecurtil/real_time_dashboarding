@@ -1,3 +1,9 @@
+<br>
+
+[![Button Acosom]][LinkAcosom] [![Button Twitter]][LinkTwitter] [![Button Linkedin]][LinkLinkedin]
+
+<br>
+
 ## :bulb: Introduction
 
 In this new blog post (or github repo), we build on everything we have seen so far in this Kafka 101 Tutorial series, namely:
@@ -277,3 +283,13 @@ Again, make sure that the `stop.sh` script in the `real_time_dashboarding` folde
 ## :pushpin: Conclusion
 
 In this blog post, we covered the full data pipeline from end to end, from raw data creation with the Kafka producer, producing high quality data records to Kafka using Avro schema and the schema registry. Then we have the streaming analytics pipeline with the Flink cluster performing time aggregation on the raw data and sinking back to Kafka. We have also covered how to get started with Apache Druid as a real-time OLAP database that allows persiting the records from Kafka, and fast-querying. Lastly, we saw how to connect our streaming database to Superset to produce insightful visualizations and dashboards. Superset acts here as our BI tool.
+
+<!---------------------------------------------------------------------------->
+
+[Button Acosom]: https://img.shields.io/badge/Acosom-Read%20blog%20post-orange
+[Button Twitter]: https://img.shields.io/twitter/follow/theodore_curtil?style=social
+[Button Linkedin]: https://img.shields.io/badge/LinkedIn-Follow%20Acosom-blue
+
+[LinkAcosom]: https://acosom.com/en/blog/kafka-101-tutorial-real-time-dashboarding-with-druid-and-superset/?utm_source=github&utm_medium=social&utm_campaign=blog 'Read on acosom.com'
+[LinkTwitter]: https://twitter.com/theodore_curtil 'Follow me on Twitter :)'
+[LinkLinkedin]: https://ch.linkedin.com/company/acosom 'Follow us on LinkedIn :)'
