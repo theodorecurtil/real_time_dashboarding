@@ -103,9 +103,14 @@ graph LR
 style Kafka fill:#F3B05A,stroke:#E6953D,stroke-width:2px,rounded,border,opacity:0.8
 style Druid fill:#7FCDCD,stroke:#5DA6A7,stroke-width:2px,rounded,border,opacity:0.8
 style Superset fill:#A78CC6,stroke:#805DA0,stroke-width:2px,rounded,border,opacity:0.8
+style Flink fill:#88CCEE,stroke:#3F78B3,stroke-width:2px,rounded,border,opacity:0.8
 
-Kafka["Kafka"] -- Raw data --> Druid["Druid"]
-Druid -- Processed data --> Superset["Superset"]
+Producer["Kafka Producer"] -- Produce Sales Events --> Kafka["Kafka"]
+Kafka -- Raw Sales Events --> Flink["Flink"]
+Flink -- Processed Sales Events --> Kafka
+Kafka -- Raw data --> Druid["Druid"]
+Kafka -- Processed data --> Druid["Druid"]
+Druid -- Forward data --> Superset["Superset"]
 ```
 
 ## :cyclone: Druid Stream Ingestion
