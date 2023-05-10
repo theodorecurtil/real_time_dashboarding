@@ -100,6 +100,10 @@ You should see something like
 
 ```mermaid
 graph LR
+style Kafka fill:#F3B05A,stroke:#E6953D,stroke-width:2px,rounded,border,opacity:0.8
+style Druid fill:#7FCDCD,stroke:#5DA6A7,stroke-width:2px,rounded,border,opacity:0.8
+style Superset fill:#A78CC6,stroke:#805DA0,stroke-width:2px,rounded,border,opacity:0.8
+
 Kafka["Kafka"] -- Raw data --> Druid["Druid"]
 Druid -- Processed data --> Superset["Superset"]
 ```
