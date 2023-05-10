@@ -138,9 +138,11 @@ The Kafka producer we started produces messages in the `SALES` topic. These are 
 
 First thing we will do is connect Druid to our Kafka cluster to allow the streaming ingestion of this topic and store it in our real-time database.
 
-We will do this using Druid's UI at [http://localhost:8888](http://localhost:8888). Below we show how to create the streaming ingestion spec step by step, but note that the ingestion spec can simply be posted using Druid's rest API as a json.
+We will do this using Druid's UI at [http://localhost:8888](http://localhost:8888). Below we show how to create the streaming ingestion spec step-by-step, but note that the ingestion spec can simply be posted using Druid's rest API as a json.
 
-The first step is to click the `load data` button and select the `Streaming` option.
+### Design the Stream Ingestion Spec
+
+The first step is to click the `Load data` button and select the `Streaming` option.
 
 ![](./pictures/streaming_spec_1.png)
 
@@ -185,7 +187,9 @@ Finally, to check that data is properly loaded in Druid, click the `Query` tab a
 
 ![](./pictures/streaming_spec_8.png)
 
-## Data Visualization in Superset
+:tada: The stream ingestion is setup and now Druid will keep listening to the `SALES` Kafka topic.
+
+## :framed_picture: Data Visualization in Superset
 
 Now that the data in successfully being ingested in our streaming database, it is time to create our dashboard to report sales to management!
 
@@ -208,11 +212,11 @@ Basically, the following should apply:
 
 ### Create Dashboard
 
-In Superset, a `Dashboard` in made of `Charts`; so the first thing is to create a `Chart`. To create a `Chart` we need to create a `Dataset` object. Click the `Dataset` button and follow the steps below to create a `Dataset` from the `SALES` topic.
+In Superset, a `Dashboard` is made of `Charts`; so the first thing is to create a `Chart`. To create a `Chart` we need to create a `Dataset` object. Click the `Dataset` button and follow the steps below to create a `Dataset` from the `SALES` topic.
 
 ![](./pictures/create_dataset.png)
 
-Create a time-series area chart from the `SALES` dataset and add a couple of configurations to the chart, as shown below. Then save the `Chart` and add it to a new `Dashboard`!
+Create a time-series area chart from the `SALES` dataset and add a couple of configurations to the chart, as shown below. Then save the `Chart` and add it to a new `Dashboard`.
 
 ![](./pictures/create_chart.png)
 
@@ -220,7 +224,7 @@ Create a time-series area chart from the `SALES` dataset and add a couple of con
 
 ## :chipmunk: Throw in some Apache Flink
 
-You will note that the Superset `Chart` that we created does the 1-Minute aggregation that our Flink job also does. Let us directly consume the aggregated data from Apache Flink.
+You will note that the Superset `Chart` that we created does the 1-Minute aggregation that our Flink job also does. Let us directly consume the aggregated data from Apache Flink now, and see if both aggregations report the same figures.
 
 The steps to follow:
 
@@ -230,7 +234,7 @@ The steps to follow:
 
 ### Start the Flink job
 
-To start the aggregating Flink job, that computes aggregated sales per store per bucket of 1 minute, type the following commands:
+To start the aggregating Flink job that computes aggregated sales per store per window of 1 minute, type the following commands:
 
 ```bash
 ## Docker exec in the container
@@ -252,3 +256,24 @@ See the dashboard below
 ![](./pictures/dashboard_2.png)
 
 As expected, the two charts are identical, as the same aggregation is performed; but in one case the aggregation in performed in Superset, and in the other case it is performed via Apache Flink, and Superset simply reads the data from the database without having to perform any work. In addition we created a pie-chart that shows the share of each store in the total amount of sales. As expected, this is close to a uniform distribution of the sales as each store generates sales from the same uniform distribution.
+
+## :skull_and_crossbones: Tear the Infrastructure Down
+
+When you are done playing with Superset, follow these steps to stop the whole infrastructure. We will first bring Druid and Superset down, and then shut Flink, Kafka and the Avro records producer. The commands are shown below.
+
+```bash
+## In the real_time_dashboarding directory
+./stop.sh
+
+## Change to the flink_sql_job directory
+cd ../flink_sql_job
+
+## docker-compose down
+docker-compose down
+```
+
+Again, make sure that the `stop.sh` script in the `real_time_dashboarding` folder is executable.
+
+## :pushpin: Conclusion
+
+In this blog post, we covered the full data pipeline from end to end, from raw data creation with the Kafka producer, producing high quality data records to Kafka using Avro schema and the schema registry. Then we have the streaming analytics pipeline with the Flink cluster performing time aggregation on the raw data and sinking back to Kafka. We have also covered how to get started with Apache Druid as a real-time OLAP database that allows persiting the records from Kafka, and fast-querying. Lastly, we saw how to connect our streaming database to Superset to produce insightful visualizations and dashboards. Superset acts here as our BI tool.
