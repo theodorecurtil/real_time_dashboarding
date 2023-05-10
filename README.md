@@ -83,7 +83,7 @@ cd real_time_dashboarding
 chmod +x start.sh
 ```
 
-The Druid [docker-compose](https://github.com/theodorecurtil/real_time_dashboarding/blob/main/druid_setup/docker-compose.yaml) file assumes that the Kafka cluster is running on the Docker network `flink_sql_job_default`. It should be the case if you cloned the `flink_sql_job` repo and started the infra using the commands listed before.
+The Druid [docker-compose](https://github.com/theodorecurtil/real_time_dashboarding/blob/main/druid_setup/docker-compose.yaml) file assumes that the Kafka cluster is running on the Docker network `flink_sql_job_default`. It should be the case if you cloned the `flink_sql_job` repo and started the infra using the commands listed before. Otherwise, simply adjust the references to the `flink_sql_job_default` Docker network in the `docker-compose` file.
 
 ### Sanity Check
 
@@ -98,7 +98,13 @@ You should see something like
 
 ![](./pictures/all_uis.png)
 
-## Druid Stream Ingestion
+```mermaid
+graph LR
+Kafka["Kafka"] -- Raw data --> Druid["Druid"]
+Druid -- Processed data --> Superset["Superset"]
+```
+
+## :cyclone: Druid Stream Ingestion
 
 The Kafka producer we started produces messages in the `SALES` topic. These are fake sales events produced every second with the following schema
 
