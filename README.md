@@ -108,6 +108,12 @@ style Flink fill:#88CCEE,stroke:#3F78B3,stroke-width:2px,rounded,border,opacity:
 Producer["Kafka Producer"] -- Produce Sales Events --> Kafka["Kafka"]
 Kafka -- Raw Sales Events --> Flink["Flink"]
 Flink -- Processed Sales Events --> Kafka
+
+subgraph Kafka_Flink
+    Kafka
+    Flink
+end
+
 Kafka -- Raw data --> Druid["Druid"]
 Kafka -- Processed data --> Druid["Druid"]
 Druid -- Forward data --> Superset["Superset"]
